@@ -1,10 +1,41 @@
 <script setup>
 import Main from "@/components/EquipmentBox.vue";
 import EquipmentBox from "@/components/EquipmentBox.vue";
-import {ref} from "vue";
+import {computed, onBeforeMount, onMounted, ref} from "vue";
 import EquipmentForm from "@/components/EquipmentForm.vue";
+import axios from "axios";
 
 const viewAddEquipmentFormModal = ref(false);
+const equipments = ref([])
+const searchBar = ref("")
+
+const filteredEquipments = computed(() => {
+  return equipments.value.filter((equipment) => {
+      if (searchBar.value !== "") {
+        if (!equipment.name.toLowerCase().includes(searchBar.value.toLowerCase()) &&
+            !equipment.inventoryNumber.toLowerCase().includes(searchBar.value.toLowerCase())) {
+          return false;
+        }
+      }
+      return true;
+  })
+})
+
+const deleteEquipment = (id) => {
+  axios.delete('http://localhost:8181/equipments/' + id).then(() => {
+    getAllEquipments()
+  })
+}
+
+const getAllEquipments = () => {
+  axios.get("http://localhost:8181/equipments").then((response) => {
+    equipments.value = response.data
+  })
+}
+
+onMounted(() => {
+  getAllEquipments()
+})
 </script>
 
 <template>
@@ -12,36 +43,21 @@ const viewAddEquipmentFormModal = ref(false);
     <h2 class="title is-2">Demo Client TPI 2023 : FullStack sur OVH</h2>
     <div class="columns is-desktop">
       <div class="column">
-        <input class="input" type="text" placeholder="Search a Equipment">
+        <input v-model="searchBar" class="input" type="text" placeholder="Search a Equipment">
       </div>
       <div class="column is-narrow-desktop">
         <button class="button is-success" @click="viewAddEquipmentFormModal = true">Add equipment</button>
       </div>
     </div>
-    <div class="">
-      <EquipmentBox/>
-      <EquipmentBox/>
-      <EquipmentBox/>
-      <EquipmentBox/>
-      <EquipmentBox/>
-      <EquipmentBox/>
-      <EquipmentBox/>
-      <EquipmentBox/>
-      <EquipmentBox/>
-      <EquipmentBox/>
-      <EquipmentBox/>
-      <EquipmentBox/>
+    <div v-if="equipments" class="">
+      <EquipmentBox v-for="equipment in filteredEquipments" v-bind="equipment" @deleteEquipment="deleteEquipment(equipment.id)" @refreshEquipments="getAllEquipments()"/>
     </div>
-    <div class="modal" :class="{'is-active': viewAddEquipmentFormModal}">
+    <div v-if="viewAddEquipmentFormModal" class="modal" :class="{'is-active': viewAddEquipmentFormModal}">
       <div class="modal-background" @click="viewAddEquipmentFormModal = false"></div>
       <div class="modal-content">
-        <EquipmentForm/>
+        <EquipmentForm @closeModal="viewAddEquipmentFormModal = false" @refreshEquipments="getAllEquipments()"/>
         <button class="modal-close is-large" aria-label="close"></button>
       </div>
     </div>
   </main>
 </template>
-
-<style scoped>
-
-</style>
