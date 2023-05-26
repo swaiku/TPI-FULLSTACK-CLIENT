@@ -1,7 +1,7 @@
 <script setup>
 import Main from "@/components/EquipmentBox.vue";
 import EquipmentBox from "@/components/EquipmentBox.vue";
-import {computed, onBeforeMount, onMounted, ref} from "vue";
+import {computed, onMounted, ref} from "vue";
 import EquipmentForm from "@/components/EquipmentForm.vue";
 import axios from "axios";
 
@@ -22,13 +22,13 @@ const filteredEquipments = computed(() => {
 })
 
 const deleteEquipment = (id) => {
-  axios.delete('http://localhost:8181/equipments/' + id).then(() => {
+  axios.delete(import.meta.env.VITE_SERVER_URL +'/equipments/' + id).then(() => {
     getAllEquipments()
   })
 }
 
 const getAllEquipments = () => {
-  axios.get("http://localhost:8181/equipments").then((response) => {
+  axios.get(import.meta.env.VITE_SERVER_URL + "/equipments").then((response) => {
     equipments.value = response.data
   })
 }

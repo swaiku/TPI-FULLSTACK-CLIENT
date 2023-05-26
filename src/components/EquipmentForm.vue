@@ -42,7 +42,7 @@ const submitForm = () => {
   }
   if (errors.value.length === 0) {
     if (isEdit.value) {
-      axios.put("http://localhost:8181/equipments/" + props.id, {
+      axios.put(import.meta.env.VITE_SERVER_URL +"/equipments/" + props.id, {
         name: nameInput.value,
         inventoryNumber: inventoryNumberInput.value,
         serialNumber: serialNumberInput.value ? serialNumberInput.value : null,
@@ -56,7 +56,7 @@ const submitForm = () => {
         responseError.value = error
       })
     } else {
-      axios.post("http://localhost:8181/equipments", {
+      axios.post(import.meta.env.VITE_SERVER_URL +"/equipments", {
         name: nameInput.value,
         inventoryNumber: inventoryNumberInput.value,
         serialNumber: serialNumberInput.value ? serialNumberInput.value : null,
