@@ -1,0 +1,52 @@
+version: "3.8"
+
+services:
+
+  client:
+    image: "swaiku/tpi_client:latest"
+    container_name: "prinj_tpi_client"
+    restart: "always"
+    ports:
+      - "8080:80"
+
+  server:
+    image: "swaiku/tpi_server:latest"
+    container_name: "prinj_tpi_server"
+    restart: "always"
+    depends_on:
+      - db
+    ports:
+      - "6464:8080"
+    environment:
+      SPRING_APPLICATION_JSON: '{ 
+        "spring.datasource.url" : "jdbc:mariadb://db:3306/$MYSQL_DATABASE?zeroDateTimeBehavior=convertToNull", 
+        "spring.datasource.username" : "root", 
+        "spring.datasource.password" : "$MYSQL_ROOT_PASSWORD", 
+        "spring.jpa.properties.hibernate.dialect" : "org.hibernate.dialect.MariaDBDialect",
+        "spring.datasource.testWhileIdle" : "true",
+        "spring.datasource.validationQuery" : "SELECT 1", 
+        "spring.jpa.hibernate.ddl-auto" : "update"
+        }'
+    links:
+      - db
+
+  db:
+    image: "mariadb:lts"
+    container_name: "prinj_tpi_db"
+    restart: 'always'
+    ports:
+      - "127.0.0.1:3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
+      MYSQL_DATABASE: "${MYSQL_DATABASE}"
+
+  phpmyadmin:
+    image: phpmyadmin
+    container_name: "phpmyadmin"
+    restart: "unless-stopped"
+    ports:
+      - "9898:80"
+    environment:
+      - "PMA_HOST=db"
+      - "PMA_ARBITRARY=1"
+      - "PMA_PORT=3306"
