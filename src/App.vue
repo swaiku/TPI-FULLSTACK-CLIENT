@@ -46,7 +46,7 @@ onMounted(() => {
         <input v-model="searchBar" class="input" type="text" placeholder="Search a Equipment">
       </div>
       <div class="column is-narrow-desktop">
-        <button class="button is-primary" @click="viewAddEquipmentFormModal = true">Add equipment</button>
+        <button class="button is-danger" @click="viewAddEquipmentFormModal = true">Add equipment</button>
       </div>
     </div>
     <div v-if="equipments" class="">
